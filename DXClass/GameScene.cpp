@@ -6,11 +6,18 @@ using namespace DirectX;
 
 GameScene::GameScene()
 {
+	pos1 = { 1280 / 2,50.0f };
+	vec1 = { 0.0f,0.0f };
+	trigger1 = false;
+	pos2 = { 50.0f ,720 / 2 };
+	vec2 = { v0 * cosf(angle) ,v0 * sinf(angle) };
+	trigger2 = false;
 }
 
 GameScene::~GameScene()
 {
 	safe_delete(sprite1);
+	safe_delete(sprite2);
 	safe_delete(particleMan);
 	safe_delete(objSample);
 	safe_delete(modelSample);
@@ -48,19 +55,17 @@ void GameScene::Init(DirectXCommon* dxCommon, Input* input, Audio* audio)
 	Object3d::SetCamera(camera);
 
 	// テクスチャ読み込み
-	if (!Sprite::LoadTexture(1, L"Resources/background.png"))
+	if (!Sprite::LoadTexture(1, L"Resources/circle.png"))
 	{
 		assert(0);
 		return;
 	}
 
-	if (!Sprite::LoadTexture(2, L"Resources/try.png")){
-		assert(0);
-		return;
-	}
-
 	// 背景スプライト生成
+
+	// その他のスプライト生成
 	sprite1 = Sprite::Create(1, { 0.0f,0.0f });
+	sprite2 = Sprite::Create(1, { 0.0f,0.0f });
 
 	// パーティクルマネージャ生成
 	particleMan = ParticleManager::Create(dxCommon->GetDev(), camera);
@@ -99,17 +104,51 @@ void GameScene::Update()
 	static XMVECTOR lightDir = { 0,1,5,0 };
 	light->SetLightDir(lightDir);
 
-	/*std::ostringstream debugstr;
+	std::ostringstream debugstr;
 	debugstr.str("");
 	debugstr.clear();
-	const XMFLOAT3& cameraPos = camera->GetEye();
+	/*const XMFLOAT3& cameraPos = camera->GetEye();
 	debugstr << "cameraPos("
 		<< std::fixed << std::setprecision(2)
 		<< cameraPos.x << ","
 		<< cameraPos.y << ","
-		<< cameraPos.z << ")";
-	debugText.Print(debugstr.str(), 50, 50, 1.0f);*/
+		<< cameraPos.z << ")";*/
+	debugText.Print("SPACE->FREE FALL", 50, 50, 2.0f);
+	debugText.Print("ENTER->CANNON", 50, 90, 2.0f);
 
+	//---自由落下---//
+	if (input->TriggerKey(DIK_SPACE))
+	{
+		pos1 = { 1280 / 2,50.0f };
+		vec1 = { 0.0f,0.0f };
+		trigger1 = true;
+	}
+
+	if (trigger1 == true)
+	{
+		vec1.y += gravity;
+		pos1.y += vec1.y;
+	}
+	//-------------//
+
+	//---斜方投射---//
+	if (input->TriggerKey(DIK_RETURN))
+	{
+		pos2 = { 50.0f ,720 / 2 };
+		vec2 = { v0 * cosf(angle) ,v0 * sinf(angle) };
+		trigger2 = true;
+	}
+
+	if (trigger2 == true)
+	{
+		pos2.x += vec2.x;
+		pos2.y -= vec2.y;
+		vec2.y -= gravity;
+	}
+	//-------------//
+
+	sprite1->SetPosition(pos1);
+	sprite2->SetPosition(pos2);
 	//camera->Update();
 	particleMan->Update();
 	objSample->Update();
@@ -132,6 +171,7 @@ void GameScene::Draw()
 
 	// 背景スプライト描画
 	sprite1->Draw();
+	sprite2->Draw();
 
 	// スプライト描画後処理
 	Sprite::AfterDraw();
@@ -141,7 +181,7 @@ void GameScene::Draw()
 
 	// 3Dオブジェクトの描画
 	Object3d::BeforeDraw(cmdList);
-	objSample->Draw();
+	//objSample->Draw();
 	Object3d::AfterDraw();
 
 	// パーティクルの描画

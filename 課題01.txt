@@ -1,0 +1,10 @@
+MT4課題用git
+https://github.com/NoriomiKuboi/MT_kadai.git
+
+ブランチは切っていないのでそのまま見れます。
+
+SPACEで自由落下の実行確認をできます。
+ENTERで大砲の実行確認をできます。
+
+GameScene.cpp内の
+119行目～148行目に処理が書いてあります。
