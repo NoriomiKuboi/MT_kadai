@@ -6,11 +6,15 @@ using namespace DirectX;
 
 GameScene::GameScene()
 {
-	pos1 = { 1280 / 2,50.0f };
-	vec1 = { 0.0f,0.0f };
+	//---摩擦---//
+	pos1 = { 50.0f,720.0f / 1.5f };
+	vec1 = { 50.0f,0.0f };
 	trigger1 = false;
-	pos2 = { 50.0f ,720 / 2 };
+	//---空気抵抗---//
+	pos2 = { 50.0f ,720.0f / 3.0f };
 	vec2 = { v0 * cosf(angle) ,v0 * sinf(angle) };
+	pos2sub = { 50.0f ,720.0f / 3.0f };
+	vec2sub = { v0 * cosf(angle) ,v0 * sinf(angle) };
 	trigger2 = false;
 }
 
@@ -18,6 +22,7 @@ GameScene::~GameScene()
 {
 	safe_delete(sprite1);
 	safe_delete(sprite2);
+	safe_delete(sprite3);
 	safe_delete(particleMan);
 	safe_delete(objSample);
 	safe_delete(modelSample);
@@ -61,11 +66,18 @@ void GameScene::Init(DirectXCommon* dxCommon, Input* input, Audio* audio)
 		return;
 	}
 
+	if (!Sprite::LoadTexture(2, L"Resources/circlePink.png"))
+	{
+		assert(0);
+		return;
+	}
+
 	// 背景スプライト生成
 
 	// その他のスプライト生成
 	sprite1 = Sprite::Create(1, { 0.0f,0.0f });
 	sprite2 = Sprite::Create(1, { 0.0f,0.0f });
+	sprite3 = Sprite::Create(2, { 0.0f,0.0f });
 
 	// パーティクルマネージャ生成
 	particleMan = ParticleManager::Create(dxCommon->GetDev(), camera);
@@ -113,42 +125,56 @@ void GameScene::Update()
 		<< cameraPos.x << ","
 		<< cameraPos.y << ","
 		<< cameraPos.z << ")";*/
-	debugText.Print("SPACE->FREE FALL", 50, 50, 2.0f);
-	debugText.Print("ENTER->CANNON", 50, 90, 2.0f);
+	debugText.Print("SPACE->MASATU", 50, 50, 2.0f);
+	debugText.Print("ENTER->KUKITEIKOU", 50, 90, 2.0f);
 
-	//---自由落下---//
+	//---摩擦---//
 	if (input->TriggerKey(DIK_SPACE))
 	{
-		pos1 = { 1280 / 2,50.0f };
-		vec1 = { 0.0f,0.0f };
+		pos1 = { 50.0f,720.0f / 1.5f };
+		vec1 = { 50.0f,0.0f };
 		trigger1 = true;
 	}
 
 	if (trigger1 == true)
 	{
-		vec1.y += gravity;
-		pos1.y += vec1.y;
+		pos1.x += vec1.x;
+
+		if (trigger1 == false)
+		{
+			vec1.x = 50.0f;
+		}
+		else
+		{
+			vec1.x *= 0.95f;
+		}
 	}
 	//-------------//
 
-	//---斜方投射---//
+	//---空気抵抗---//
 	if (input->TriggerKey(DIK_RETURN))
 	{
-		pos2 = { 50.0f ,720 / 2 };
+		pos2 = { 50.0f ,720.0f / 3.0f };
 		vec2 = { v0 * cosf(angle) ,v0 * sinf(angle) };
+		pos2sub = { 50.0f ,720.0f / 3.0f };
+		vec2sub = { v0 * cosf(angle) ,v0 * sinf(angle) };
 		trigger2 = true;
 	}
 
 	if (trigger2 == true)
 	{
-		pos2.x += vec2.x;
+		pos2.x += vec2.x - (vec2.x * dt);
 		pos2.y -= vec2.y;
 		vec2.y -= gravity;
+		pos2sub.x += vec2sub.x;
+		pos2sub.y -= vec2sub.y;
+		vec2sub.y -= gravity;
 	}
 	//-------------//
 
 	sprite1->SetPosition(pos1);
 	sprite2->SetPosition(pos2);
+	sprite3->SetPosition(pos2sub);
 	//camera->Update();
 	particleMan->Update();
 	objSample->Update();
@@ -172,6 +198,7 @@ void GameScene::Draw()
 	// 背景スプライト描画
 	sprite1->Draw();
 	sprite2->Draw();
+	sprite3->Draw();
 
 	// スプライト描画後処理
 	Sprite::AfterDraw();

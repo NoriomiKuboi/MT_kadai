@@ -8,3 +8,64 @@ ENTERで大砲の実行確認をできます。
 
 GameScene.cpp内の
 119行目～148行目に処理が書いてあります。
+
+.hファイル
+// 課題1用の変数
+//---自由落下---//
+const float gravity = 9.8f / 60.0f;
+XMFLOAT2 pos1;
+XMFLOAT2 vec1;
+bool trigger1;
+//-------------//
+
+//---斜方投射---//
+const float p = 3.141592f;
+const float deg = 45.0f;
+const float angle = deg * p / 180.0f;
+const float v0 = 10.0f;
+XMFLOAT2 pos2;
+XMFLOAT2 vec2;
+bool trigger2;
+//-------------//
+
+.cppファイル
+GameScene::GameScene()
+	pos1 = { 1280 / 2,50.0f };
+	vec1 = { 0.0f,0.0f };
+	trigger1 = false;
+	pos2 = { 50.0f ,720 / 2 };
+	vec2 = { v0 * cosf(angle) ,v0 * sinf(angle) };
+	trigger2 = false;
+
+
+void GameScene::Update()
+	//---自由落下---//
+	if (input->TriggerKey(DIK_SPACE))
+	{
+		pos1 = { 1280 / 2,50.0f };
+		vec1 = { 0.0f,0.0f };
+		trigger1 = true;
+	}
+
+	if (trigger1 == true)
+	{
+		vec1.y += gravity;
+		pos1.y += vec1.y;
+	}
+	//-------------//
+
+	//---斜方投射---//
+	if (input->TriggerKey(DIK_RETURN))
+	{
+		pos2 = { 50.0f ,720 / 2 };
+		vec2 = { v0 * cosf(angle) ,v0 * sinf(angle) };
+		trigger2 = true;
+	}
+
+	if (trigger2 == true)
+	{
+		pos2.x += vec2.x;
+		pos2.y -= vec2.y;
+		vec2.y -= gravity;
+	}
+	//-------------//
