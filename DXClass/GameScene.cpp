@@ -164,7 +164,7 @@ void GameScene::Update()
 	if (trigger2 == true)
 	{
 		pos2.x += vec2.x - (vec2.x * dt);
-		pos2.y -= vec2.y;
+		pos2.y -= vec2.y - (vec2.y * dt);
 		vec2.y -= gravity;
 		pos2sub.x += vec2sub.x;
 		pos2sub.y -= vec2sub.y;
