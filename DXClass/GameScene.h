@@ -58,24 +58,15 @@ private:
 	// ライト
 	Light* light = nullptr;
 
-	// 課題2用の変数
-	//---摩擦---//
+	// 課題3用の変数
+	//---衝突と反発---//
 	XMFLOAT2 pos1;
 	XMFLOAT2 vec1;
-	bool trigger1;
-	//-------------//
-
-	//---空気抵抗---//
-	const float gravity = 9.8f / 60.0f;
-	const float p = 3.141592f;
-	const float deg = 45.0f;
-	const float angle = deg * p / 180.0f;
-	const float v0 = 10.0f;
-	const float dt = 0.1;
 	XMFLOAT2 pos2;
 	XMFLOAT2 vec2;
-	XMFLOAT2 pos2sub;
-	XMFLOAT2 vec2sub;
-	bool trigger2;
-	//-------------//
+	bool trigger;
+	bool flag;
+
+	bool hit(XMFLOAT2 pos1,float r1, XMFLOAT2 pos2, float r2);
+	//---------------//
 };

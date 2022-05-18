@@ -8,3 +8,84 @@ ENTERで空気抵抗の実行確認をできます。(空気抵抗はピンク�
 
 GameScene.cpp内の
 131行目～173行目に処理が書いてあります。
+
+.hファイル
+//---摩擦---//
+XMFLOAT2 pos1;
+XMFLOAT2 vec1;
+bool trigger1;
+//-------------//
+
+//---空気抵抗---//
+const float gravity = 9.8f / 60.0f;
+const float p = 3.141592f;
+const float deg = 45.0f;
+const float angle = deg * p / 180.0f;
+const float v0 = 10.0f;
+const float dt = 0.1;
+XMFLOAT2 pos2;
+XMFLOAT2 vec2;
+XMFLOAT2 pos2sub;
+XMFLOAT2 vec2sub;
+bool trigger2;
+//-------------//
+
+.cppファイル
+GameScene::GameScene()
+{
+	//---摩擦---//
+	pos1 = { 50.0f,720.0f / 1.5f };
+	vec1 = { 50.0f,0.0f };
+	trigger1 = false;
+	//---空気抵抗---//
+	pos2 = { 50.0f ,720.0f / 3.0f };
+	vec2 = { v0 * cosf(angle) ,v0 * sinf(angle) };
+	pos2sub = { 50.0f ,720.0f / 3.0f };
+	vec2sub = { v0 * cosf(angle) ,v0 * sinf(angle) };
+	trigger2 = false;
+}
+
+
+void GameScene::Update()
+	//---摩擦---//
+	if (input->TriggerKey(DIK_SPACE))
+	{
+		pos1 = { 50.0f,720.0f / 1.5f };
+		vec1 = { 50.0f,0.0f };
+		trigger1 = true;
+	}
+
+	if (trigger1 == true)
+	{
+		pos1.x += vec1.x;
+
+		if (trigger1 == false)
+		{
+			vec1.x = 50.0f;
+		}
+		else
+		{
+			vec1.x *= 0.95f;
+		}
+	}
+	//-------------//
+
+	//---空気抵抗---//
+	if (input->TriggerKey(DIK_RETURN))
+	{
+		pos2 = { 50.0f ,720.0f / 3.0f };
+		vec2 = { v0 * cosf(angle) ,v0 * sinf(angle) };
+		pos2sub = { 50.0f ,720.0f / 3.0f };
+		vec2sub = { v0 * cosf(angle) ,v0 * sinf(angle) };
+		trigger2 = true;
+	}
+
+	if (trigger2 == true)
+	{
+		pos2.x += vec2.x - (vec2.x * dt);
+		pos2.y -= vec2.y - (vec2.y * dt);
+		vec2.y -= gravity;
+		pos2sub.x += vec2sub.x;
+		pos2sub.y -= vec2sub.y;
+		vec2sub.y -= gravity;
+	}	
