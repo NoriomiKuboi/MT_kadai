@@ -1,0 +1,51 @@
+.hファイル
+XMFLOAT2 pos1;
+XMFLOAT2 vec1;
+XMFLOAT2 pos2;
+XMFLOAT2 vec2;
+bool trigger;
+bool flag;
+
+.cppファイル
+GameScene::GameScene()
+	pos1 = { 100.0f,720.0f / 2.0f };
+	vec1 = { 10.0f,0.0f };
+	pos2 = { 1180.0f,720.0f / 2.0f };
+	vec2 = { 20.0f,0.0f };
+	trigger = false;
+	flag = false
+
+
+void GameScene::Update()
+if (input->TriggerKey(DIK_SPACE))
+	{
+		pos1 = { 100.0f,720.0f / 2.0f };
+		vec1 = { 10.0f,0.0f };
+		pos2 = { 1180.0f,720.0f / 2.0f };
+		vec2 = { 20.0f,0.0f };
+		trigger = true;
+		flag = false;
+	}
+
+	if (trigger)
+	{
+		if (hit(pos1,16,pos2,16))
+		{
+			flag = true;
+			vec1.x = 17.0f;
+			vec2.x = 13.0f;
+		}
+
+		if (flag)
+		{
+			pos1.x -= vec1.x;
+			pos2.x += vec2.x;
+			vec1.x *= 0.95f;
+			vec2.x *= 0.95f;
+		}
+		else
+		{
+			pos1.x += vec1.x;
+			pos2.x -= vec2.x;
+		}
+	}

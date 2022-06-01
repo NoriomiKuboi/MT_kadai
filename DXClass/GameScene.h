@@ -66,6 +66,7 @@ private:
 	XMFLOAT2 vec2;
 	bool trigger;
 	bool flag;
+	float e;
 
 	bool hit(XMFLOAT2 pos1,float r1, XMFLOAT2 pos2, float r2);
 	//---------------//

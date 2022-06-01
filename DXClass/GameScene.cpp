@@ -12,6 +12,7 @@ GameScene::GameScene()
 	vec2 = { 20.0f,0.0f };
 	trigger = false;
 	flag = false;
+	e = 1.0f;
 }
 
 GameScene::~GameScene()
@@ -114,13 +115,24 @@ void GameScene::Update()
 	std::ostringstream debugstr;
 	debugstr.str("");
 	debugstr.clear();
-	/*const XMFLOAT3& cameraPos = camera->GetEye();
-	debugstr << "cameraPos("
+	const XMFLOAT3& cameraPos = camera->GetEye();
+	/*debugstr << "cameraPos("
 		<< std::fixed << std::setprecision(2)
 		<< cameraPos.x << ","
 		<< cameraPos.y << ","
 		<< cameraPos.z << ")";*/
+
+	debugstr << "e ("
+		<< std::fixed << std::setprecision(1)
+		<< e << ")";
+
+	debugText.Print(debugstr.str(), 50, 90, 2.0f);
 	debugText.Print("SPACE", 50, 50, 2.0f);
+
+	//----”½”­ŒW”----//
+	if (e > 0.0f && input->TriggerKey(DIK_DOWN)) { e -= 0.1f; }
+	if (e < 1.0f && input->TriggerKey(DIK_UP)) { e += 0.1f; }
+	//---------------//
 
 	if (input->TriggerKey(DIK_SPACE))
 	{
@@ -137,9 +149,8 @@ void GameScene::Update()
 		if (hit(pos1,16,pos2,16))
 		{
 			flag = true;
-			vec1.x = 17.0f;
-			vec2.x = 13.0f;
-
+			vec1.x = 17.0f * e;
+			vec2.x = 13.0f * e;
 		}
 
 		if (flag)
