@@ -1,3 +1,5 @@
+//-----衝突と反発　中編-----//
+
 .hファイル
 XMFLOAT2 pos1;
 XMFLOAT2 vec1;
