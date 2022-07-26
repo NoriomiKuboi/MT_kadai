@@ -58,16 +58,14 @@ private:
 	// ライト
 	Light* light = nullptr;
 
-	// 課題3用の変数
-	//---衝突と反発---//
+	// 課題7用の変数
+	//---イージング---//
 	XMFLOAT2 pos1;
-	XMFLOAT2 vec1;
 	XMFLOAT2 pos2;
-	XMFLOAT2 vec2;
-	bool trigger;
-	bool flag;
-	float e;
+	int easingTime;
+	int maxTime;
 
-	bool hit(XMFLOAT2 pos1,float r1, XMFLOAT2 pos2, float r2);
+	float easeIn(const float& start, const float& end, const float t);
+	float easeOut(const float& start, const float& end, const float t);
 	//---------------//
 };

@@ -6,13 +6,10 @@ using namespace DirectX;
 
 GameScene::GameScene()
 {
-	pos1 = { 100.0f,720.0f / 2.0f };
-	vec1 = { 10.0f,0.0f };
-	pos2 = { 1180.0f,720.0f / 2.0f };
-	vec2 = { 20.0f,0.0f };
-	trigger = false;
-	flag = false;
-	e = 1.0f;
+	pos1 = { 100.0f,720.0f / 2.0f - 100.0f};
+	pos2 = { 100.0f,720.0f / 2.0f + 100.0f};
+	easingTime = 0;
+	maxTime = 0;
 }
 
 GameScene::~GameScene()
@@ -73,7 +70,7 @@ void GameScene::Init(DirectXCommon* dxCommon, Input* input, Audio* audio)
 
 	// その他のスプライト生成
 	sprite1 = Sprite::Create(1, { 0.0f,0.0f });
-	sprite2 = Sprite::Create(2, { 0.0f,0.0f });
+	sprite2 = Sprite::Create(1, { 0.0f,0.0f });
 
 	// パーティクルマネージャ生成
 	particleMan = ParticleManager::Create(dxCommon->GetDev(), camera);
@@ -122,50 +119,25 @@ void GameScene::Update()
 		<< cameraPos.y << ","
 		<< cameraPos.z << ")";*/
 
-	debugstr << "e ("
-		<< std::fixed << std::setprecision(1)
-		<< e << ")";
-
 	debugText.Print(debugstr.str(), 50, 90, 2.0f);
-	debugText.Print("SPACE", 50, 50, 2.0f);
-
-	//----反発係数----//
-	if (e > 0.0f && input->TriggerKey(DIK_DOWN)) { e -= 0.1f; }
-	if (e < 1.0f && input->TriggerKey(DIK_UP)) { e += 0.1f; }
-	//---------------//
+	debugText.Print("SPACE : Reset", 50, 50, 2.0f);
+	debugText.Print("easeIn", 50, 160, 2.0f);
+	debugText.Print("easeOut", 50, 360, 2.0f);
 
 	if (input->TriggerKey(DIK_SPACE))
 	{
-		pos1 = { 100.0f,720.0f / 2.0f };
-		vec1 = { 10.0f,0.0f };
-		pos2 = { 1180.0f,720.0f / 2.0f };
-		vec2 = { 20.0f,0.0f };
-		trigger = true;
-		flag = false;
+		pos1 = { 100.0f,720.0f / 2.0f - 100.0f };
+		pos2 = { 100.0f,720.0f / 2.0f + 100.0f };
+		easingTime = 0;
 	}
 
-	if (trigger)
+	if (easingTime < 60)
 	{
-		if (hit(pos1,16,pos2,16))
-		{
-			flag = true;
-			vec1.x = 17.0f * e;
-			vec2.x = 13.0f * e;
-		}
-
-		if (flag)
-		{
-			pos1.x -= vec1.x;
-			pos2.x += vec2.x;
-			vec1.x *= 0.95f;
-			vec2.x *= 0.95f;
-		}
-		else
-		{
-			pos1.x += vec1.x;
-			pos2.x -= vec2.x;
-		}
+		easingTime++;
 	}
+
+	pos1.x = easeIn(100.0f, 1180.0f, static_cast<float>(easingTime) / 60);
+	pos2.x = easeOut(100.0f, 1180.0f, static_cast<float>(easingTime) / 60);
 
 	sprite1->SetPosition(pos1);
 	sprite2->SetPosition(pos2);
@@ -249,11 +221,14 @@ void GameScene::CreateParticles()
 	}
 }
 
-bool GameScene::hit(XMFLOAT2 pos1, float r1, XMFLOAT2 pos2, float r2)
+float GameScene::easeIn(const float& start, const float& end, const float t)
 {
-	float dx = pos2.x - pos1.x;
-	float dy = pos2.y - pos1.y;
-	float d = dx * dx + dy * dy;
-	float r = r1 + r2;
-	return d < r * r;
+	float x = t * t;
+	return start * (1.0f - x) + end * x;
+}
+
+float GameScene::easeOut(const float& start, const float& end, const float t)
+{
+	float x = t * (2 - t);
+	return start * (1.0f - x) + end * x;
 }
