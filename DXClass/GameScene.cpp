@@ -6,10 +6,11 @@ using namespace DirectX;
 
 GameScene::GameScene()
 {
-	pos1 = { 100.0f,720.0f / 2.0f - 100.0f};
-	pos2 = { 100.0f,720.0f / 2.0f + 100.0f};
-	easingTime = 0;
-	maxTime = 0;
+	circlePos = { 1280.0f / 2.0f - circleRadius,720.0f / 2.0f - circleRadius };
+	linePos = { 800.0f,720.0f / 2.0f - 100.0f };
+	start = { 0,0 };
+	end = { 0,0 };
+	trigger = false;
 }
 
 GameScene::~GameScene()
@@ -66,11 +67,18 @@ void GameScene::Init(DirectXCommon* dxCommon, Input* input, Audio* audio)
 		return;
 	}
 
+	if (!Sprite::LoadTexture(3, L"Resources/line.png"))
+	{
+		assert(0);
+		return;
+	}
+
 	// 背景スプライト生成
 
 	// その他のスプライト生成
 	sprite1 = Sprite::Create(1, { 0.0f,0.0f });
-	sprite2 = Sprite::Create(1, { 0.0f,0.0f });
+	sprite2 = Sprite::Create(2, { 0.0f,0.0f });
+	sprite3 = Sprite::Create(3, { 0.0f,0.0f });
 
 	// パーティクルマネージャ生成
 	particleMan = ParticleManager::Create(dxCommon->GetDev(), camera);
@@ -120,27 +128,49 @@ void GameScene::Update()
 		<< cameraPos.z << ")";*/
 
 	debugText.Print(debugstr.str(), 50, 90, 2.0f);
-	debugText.Print("SPACE : Reset", 50, 50, 2.0f);
-	debugText.Print("easeIn", 50, 160, 2.0f);
-	debugText.Print("easeOut", 50, 360, 2.0f);
+	debugText.Print("A : left", 50, 50, 2.0f);
+	debugText.Print("D : right", 50, 80, 2.0f);
+	debugText.Print("W : up", 50, 110, 2.0f);
+	debugText.Print("S : down", 50, 140, 2.0f);
 
-	if (input->TriggerKey(DIK_SPACE))
+	//---移動---//
+	linePos.x += (input->PushKey(DIK_D) - input->PushKey(DIK_A)) * 3;
+	linePos.y += (input->PushKey(DIK_S) - input->PushKey(DIK_W)) * 3;
+	//----------//
+
+	start = { linePos.x,linePos.y };
+	end = { linePos.x,linePos.y + 200.0f };
+
+	sprite1->SetPosition(circlePos);
+	sprite2->SetPosition(circlePos);
+	sprite3->SetPosition(linePos);
+
+	float dis = ((center.x - start.x) * (end.y - start.y) - (end.x - start.x) * (center.y - start.y)) / static_cast<float>(sqrtf(pow(end.x - start.x, 2) + pow(end.y - start.y, 2)));
+
+	if (fabsf(dis) <= 16.0f)
 	{
-		pos1 = { 100.0f,720.0f / 2.0f - 100.0f };
-		pos2 = { 100.0f,720.0f / 2.0f + 100.0f };
-		easingTime = 0;
+		float dot1 = (center.x - start.x) * (end.x - start.x) + (center.y - start.y) * (end.y - start.y);
+		float dot2 = (center.x - end.x) * (end.x - start.x) + (center.y - end.y) * (end.y - start.y);
+
+		if (dot1 * dot2 <= 0.0f)
+		{
+			trigger = true;
+		}
+		else if (NormalizeVector(XMFLOAT2(center.x - start.x, center.y - start.y)) < circleRadius || NormalizeVector(XMFLOAT2(center.x - end.x, center.y - end.y)) < circleRadius)
+		{
+			trigger = true;
+		}
+		else
+		{
+			trigger = false;
+		}
 	}
 
-	if (easingTime < 60)
+	else
 	{
-		easingTime++;
+		trigger = false;
 	}
 
-	pos1.x = easeIn(100.0f, 1180.0f, static_cast<float>(easingTime) / 60);
-	pos2.x = easeOut(100.0f, 1180.0f, static_cast<float>(easingTime) / 60);
-
-	sprite1->SetPosition(pos1);
-	sprite2->SetPosition(pos2);
 	//camera->Update();
 	particleMan->Update();
 	objSample->Update();
@@ -163,7 +193,11 @@ void GameScene::Draw()
 
 	// 背景スプライト描画
 	sprite1->Draw();
-	sprite2->Draw();
+	if (trigger == true)
+	{
+		sprite2->Draw();
+	}
+	sprite3->Draw();
 
 	// スプライト描画後処理
 	Sprite::AfterDraw();
@@ -221,14 +255,7 @@ void GameScene::CreateParticles()
 	}
 }
 
-float GameScene::easeIn(const float& start, const float& end, const float t)
+float GameScene::NormalizeVector(XMFLOAT2 vec)
 {
-	float x = t * t;
-	return start * (1.0f - x) + end * x;
-}
-
-float GameScene::easeOut(const float& start, const float& end, const float t)
-{
-	float x = t * (2 - t);
-	return start * (1.0f - x) + end * x;
+	return static_cast<float>(sqrtf(pow(vec.x,2) + pow(vec.y,2)));
 }

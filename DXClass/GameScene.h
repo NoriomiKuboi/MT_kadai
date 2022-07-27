@@ -58,14 +58,18 @@ private:
 	// ライト
 	Light* light = nullptr;
 
-	// 課題7用の変数
-	//---イージング---//
-	XMFLOAT2 pos1;
-	XMFLOAT2 pos2;
-	int easingTime;
-	int maxTime;
+	// 課題6用の変数
+	//---内積・外積---//
+	XMFLOAT2 circlePos;
+	XMFLOAT2 linePos;
+	const float vec2 = 2.0f;
+	bool trigger;
 
-	float easeIn(const float& start, const float& end, const float t);
-	float easeOut(const float& start, const float& end, const float t);
+	const XMFLOAT2 center = { 1280.0f / 2.0f ,720.0f / 2.0f };
+
+	const float circleRadius = 16.0f;
+	XMFLOAT2 start;
+	XMFLOAT2 end;
+	float NormalizeVector(XMFLOAT2 vec);
 	//---------------//
 };

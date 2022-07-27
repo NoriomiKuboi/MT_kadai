@@ -1,0 +1,25 @@
+//-----イージング-----//
+
+.hファイル
+	XMFLOAT2 pos1;
+	XMFLOAT2 pos2;
+	int easingTime;
+	int maxTime;
+
+	float easeIn(const float& start, const float& end, const float t);
+	float easeOut(const float& start, const float& end, const float t);
+
+.cppファイル
+GameScene::GameScene()
+	pos1 = { 100.0f,720.0f / 2.0f - 100.0f};
+	pos2 = { 100.0f,720.0f / 2.0f + 100.0f};
+	easingTime = 0;
+
+GameScene::Update()
+	if (easingTime < 60)
+	{
+		easingTime++;
+	}
+
+	pos1.x = easeIn(100.0f, 1180.0f, static_cast<float>(easingTime) / 60);
+	pos2.x = easeOut(100.0f, 1180.0f, static_cast<float>(easingTime) / 60);
