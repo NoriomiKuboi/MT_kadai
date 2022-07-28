@@ -58,20 +58,18 @@ private:
 	// ライト
 	Light* light = nullptr;
 
-	// 課題9用の変数
-	//---振り子---//
+	// 課題8用の変数
+	//---連結---//
 	XMFLOAT2 circlePos;
-
-	const float pi = 3.1415f;
-	const int len = 100;
-	const float circum = (len * 2 * pi);
-	const float mass = 0.1f;
-	const float gravity = 9.8f;
-	const float rad = 16.0f;
-
-	float x;
-	float speed;
-	float angle;
-	XMFLOAT2 pos;
+	XMFLOAT2 linePos;
+	float y;
+	float mass;
+	float k;
+	float damp;
+	float velY;
+	float accel;
+	float force;
+	float posY;
+	bool trigger;
 	//---------------//
 };

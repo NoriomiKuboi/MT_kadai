@@ -6,11 +6,17 @@ using namespace DirectX;
 
 GameScene::GameScene()
 {
-	circlePos = { 1280.0f / 2.0f - rad,720.0f / 2.0f - rad };
-	x = circum / 8.0f;
-	speed = 0.0f;
-	angle = 0.0f;
-	pos = { 0.0f,0.0f };
+	circlePos = { 1280.0f / 2.0f,720.0f / 2.0f };
+	linePos = { 1280.0f / 2.0f + 16.0f,720.0f / 2.0f - 200.0f };
+	y = 0.0f;
+	mass = 10.1f;
+	k = 0.3f;
+	damp = 0.97f;
+	velY = 0.0f;
+	accel = 0.0f;
+	force = 0.0f;
+	posY = 200.0f;
+	trigger = false;
 }
 
 GameScene::~GameScene()
@@ -128,17 +134,37 @@ void GameScene::Update()
 		<< cameraPos.z << ")";*/
 
 	debugText.Print(debugstr.str(), 50, 90, 2.0f);
-	debugText.Print("FURIKO", 70, 50, 2.0f);
+	debugText.Print("BANE", 70, 50, 2.0f);
+	debugText.Print("SPACE : RESET", 70, 80, 2.0f);
 
-	speed += -mass * gravity * sin(x / len);
-	x += speed;
-	angle = x / len + pi / 2.0f;
-	pos.x = cos(angle) * len;
-	pos.y = sin(angle) * len;
+	float distY = posY - y;
+	force = k * distY;
+	accel = force / mass;
+	velY = damp * (velY + accel);
 
-	sprite1->SetPosition({ circlePos.x + pos.x,circlePos.y + pos.y });
-	//sprite3->SetPosition(linePos);
-	//sprite3->SetRotation(sit);
+	if (input->PushKey(DIK_SPACE))
+	{
+		trigger = true;
+	}
+
+	else
+	{
+		trigger = false;
+	}
+
+	if (trigger == true)
+	{
+		y++;
+	}
+
+	else if (trigger == false)
+	{
+		y += velY;
+	}
+
+	sprite1->SetPosition({ circlePos.x, linePos.y + y });
+	sprite3->SetPosition(linePos);
+	sprite3->SetSize({ 1,y });
 
 	//camera->Update();
 	particleMan->Update();
@@ -163,7 +189,7 @@ void GameScene::Draw()
 	// 背景スプライト描画S
 	sprite1->Draw();
 	//sprite2->Draw();
-	//sprite3->Draw();
+	sprite3->Draw();
 
 	// スプライト描画後処理
 	Sprite::AfterDraw();

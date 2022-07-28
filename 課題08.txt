@@ -1,0 +1,40 @@
+//---連結---//
+
+.hファイル
+	XMFLOAT2 circlePos;
+	XMFLOAT2 linePos;
+	float y;
+	float mass;
+	float k;
+	float damp;
+	float velY;
+	float accel;
+	float force;
+	float posY;
+	bool trigger;
+
+.cppファイル
+	float distY = posY - y;
+	force = k * distY;
+	accel = force / mass;
+	velY = damp * (velY + accel);
+
+	if (input->PushKey(DIK_SPACE))
+	{
+		trigger = true;
+	}
+
+	else
+	{
+		trigger = false;
+	}
+
+	if (trigger == true)
+	{
+		y++;
+	}
+
+	else if (trigger == false)
+	{
+		y += velY;
+	}
