@@ -6,17 +6,10 @@ using namespace DirectX;
 
 GameScene::GameScene()
 {
-	circlePos = { 1280.0f / 2.0f,720.0f / 2.0f };
-	linePos = { 1280.0f / 2.0f + 16.0f,720.0f / 2.0f - 200.0f };
-	y = 0.0f;
-	mass = 10.1f;
-	k = 0.3f;
-	damp = 0.97f;
-	velY = 0.0f;
-	accel = 0.0f;
-	force = 0.0f;
-	posY = 200.0f;
-	trigger = false;
+	pos = { 1280.0f / 2.0f, 720.0f / 2.0f };
+	drawPos = { 0.0f,0.0f };
+	angle = 0;
+	len = 200;
 }
 
 GameScene::~GameScene()
@@ -134,37 +127,19 @@ void GameScene::Update()
 		<< cameraPos.z << ")";*/
 
 	debugText.Print(debugstr.str(), 50, 90, 2.0f);
-	debugText.Print("BANE", 70, 50, 2.0f);
-	debugText.Print("SPACE : RESET", 70, 80, 2.0f);
+	debugText.Print("Circular Motion", 70, 50, 2.0f);
 
-	float distY = posY - y;
-	force = k * distY;
-	accel = force / mass;
-	velY = damp * (velY + accel);
+	float rad = angle * 3.14f / 180.0f;
 
-	if (input->PushKey(DIK_SPACE))
-	{
-		trigger = true;
-	}
+	float addX = cos(rad) * len;
+	float addY = sin(rad) * len;
 
-	else
-	{
-		trigger = false;
-	}
+	drawPos.x = pos.x + addX;
+	drawPos.y = pos.y + addY;
 
-	if (trigger == true)
-	{
-		y++;
-	}
+	angle += 10.0f;
 
-	else if (trigger == false)
-	{
-		y += velY;
-	}
-
-	sprite1->SetPosition({ circlePos.x, linePos.y + y });
-	sprite3->SetPosition(linePos);
-	sprite3->SetSize({ 1,y });
+	sprite1->SetPosition(drawPos);
 
 	//camera->Update();
 	particleMan->Update();
@@ -189,7 +164,7 @@ void GameScene::Draw()
 	// 背景スプライト描画S
 	sprite1->Draw();
 	//sprite2->Draw();
-	sprite3->Draw();
+	//sprite3->Draw();
 
 	// スプライト描画後処理
 	Sprite::AfterDraw();

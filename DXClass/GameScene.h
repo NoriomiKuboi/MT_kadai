@@ -58,18 +58,11 @@ private:
 	// ライト
 	Light* light = nullptr;
 
-	// 課題8用の変数
-	//---連結---//
-	XMFLOAT2 circlePos;
-	XMFLOAT2 linePos;
-	float y;
-	float mass;
-	float k;
-	float damp;
-	float velY;
-	float accel;
-	float force;
-	float posY;
-	bool trigger;
+	// 課題5用の変数
+	//---円運動---//
+	XMFLOAT2 pos;
+	XMFLOAT2 drawPos;
+	float angle;
+	float len;
 	//---------------//
 };
