@@ -1,0 +1,31 @@
+//---振り子---//
+
+.hファイル
+XMFLOAT2 circlePos;
+
+	const float pi = 3.1415f;
+	const int len = 100;
+	const float circum = (len * 2 * pi);
+	const float mass = 0.1f;
+	const float gravity = 9.8f;
+	const float rad = 16.0f;
+
+	float x;
+	float speed;
+	float angle;
+	XMFLOAT2 pos;
+
+.cppファイル
+GameScene::GameScene
+	circlePos = { 1280.0f / 2.0f - rad,720.0f / 2.0f - rad };
+	x = circum / 8.0f;
+	speed = 0.0f;
+	angle = 0.0f;
+	pos = { 0.0f,0.0f };
+
+GameScene::Update
+	speed += -mass * gravity * sin(x / len);
+	x += speed;
+	angle = x / len + pi / 2.0f;
+	pos.x = cos(angle) * len;
+	pos.y = sin(angle) * len;

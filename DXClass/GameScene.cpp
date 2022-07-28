@@ -6,11 +6,11 @@ using namespace DirectX;
 
 GameScene::GameScene()
 {
-	circlePos = { 1280.0f / 2.0f - circleRadius,720.0f / 2.0f - circleRadius };
-	linePos = { 800.0f,720.0f / 2.0f - 100.0f };
-	start = { 0,0 };
-	end = { 0,0 };
-	trigger = false;
+	circlePos = { 1280.0f / 2.0f - rad,720.0f / 2.0f - rad };
+	x = circum / 8.0f;
+	speed = 0.0f;
+	angle = 0.0f;
+	pos = { 0.0f,0.0f };
 }
 
 GameScene::~GameScene()
@@ -128,48 +128,17 @@ void GameScene::Update()
 		<< cameraPos.z << ")";*/
 
 	debugText.Print(debugstr.str(), 50, 90, 2.0f);
-	debugText.Print("A : left", 50, 50, 2.0f);
-	debugText.Print("D : right", 50, 80, 2.0f);
-	debugText.Print("W : up", 50, 110, 2.0f);
-	debugText.Print("S : down", 50, 140, 2.0f);
+	debugText.Print("FURIKO", 70, 50, 2.0f);
 
-	//---ˆÚ“®---//
-	linePos.x += (input->PushKey(DIK_D) - input->PushKey(DIK_A)) * 3;
-	linePos.y += (input->PushKey(DIK_S) - input->PushKey(DIK_W)) * 3;
-	//----------//
+	speed += -mass * gravity * sin(x / len);
+	x += speed;
+	angle = x / len + pi / 2.0f;
+	pos.x = cos(angle) * len;
+	pos.y = sin(angle) * len;
 
-	start = { linePos.x,linePos.y };
-	end = { linePos.x,linePos.y + 200.0f };
-
-	sprite1->SetPosition(circlePos);
-	sprite2->SetPosition(circlePos);
-	sprite3->SetPosition(linePos);
-
-	float dis = ((center.x - start.x) * (end.y - start.y) - (end.x - start.x) * (center.y - start.y)) / static_cast<float>(sqrtf(pow(end.x - start.x, 2) + pow(end.y - start.y, 2)));
-
-	if (fabsf(dis) <= 16.0f)
-	{
-		float dot1 = (center.x - start.x) * (end.x - start.x) + (center.y - start.y) * (end.y - start.y);
-		float dot2 = (center.x - end.x) * (end.x - start.x) + (center.y - end.y) * (end.y - start.y);
-
-		if (dot1 * dot2 <= 0.0f)
-		{
-			trigger = true;
-		}
-		else if (NormalizeVector(XMFLOAT2(center.x - start.x, center.y - start.y)) < circleRadius || NormalizeVector(XMFLOAT2(center.x - end.x, center.y - end.y)) < circleRadius)
-		{
-			trigger = true;
-		}
-		else
-		{
-			trigger = false;
-		}
-	}
-
-	else
-	{
-		trigger = false;
-	}
+	sprite1->SetPosition({ circlePos.x + pos.x,circlePos.y + pos.y });
+	//sprite3->SetPosition(linePos);
+	//sprite3->SetRotation(sit);
 
 	//camera->Update();
 	particleMan->Update();
@@ -191,13 +160,10 @@ void GameScene::Draw()
 	// ”wŒiƒXƒvƒ‰ƒCƒg•`‰æ‘Oˆ—
 	Sprite::BeforeDraw(cmdList);
 
-	// ”wŒiƒXƒvƒ‰ƒCƒg•`‰æ
+	// ”wŒiƒXƒvƒ‰ƒCƒg•`‰æS
 	sprite1->Draw();
-	if (trigger == true)
-	{
-		sprite2->Draw();
-	}
-	sprite3->Draw();
+	//sprite2->Draw();
+	//sprite3->Draw();
 
 	// ƒXƒvƒ‰ƒCƒg•`‰æŒãˆ—
 	Sprite::AfterDraw();
@@ -253,9 +219,4 @@ void GameScene::CreateParticles()
 		// ’Ç‰Á
 		particleMan->Add(60, pos, vel, acc, 1.0f, 0.0f);
 	}
-}
-
-float GameScene::NormalizeVector(XMFLOAT2 vec)
-{
-	return static_cast<float>(sqrtf(pow(vec.x,2) + pow(vec.y,2)));
 }

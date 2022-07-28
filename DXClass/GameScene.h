@@ -58,18 +58,20 @@ private:
 	// ライト
 	Light* light = nullptr;
 
-	// 課題6用の変数
-	//---内積・外積---//
+	// 課題9用の変数
+	//---振り子---//
 	XMFLOAT2 circlePos;
-	XMFLOAT2 linePos;
-	const float vec2 = 2.0f;
-	bool trigger;
 
-	const XMFLOAT2 center = { 1280.0f / 2.0f ,720.0f / 2.0f };
+	const float pi = 3.1415f;
+	const int len = 100;
+	const float circum = (len * 2 * pi);
+	const float mass = 0.1f;
+	const float gravity = 9.8f;
+	const float rad = 16.0f;
 
-	const float circleRadius = 16.0f;
-	XMFLOAT2 start;
-	XMFLOAT2 end;
-	float NormalizeVector(XMFLOAT2 vec);
+	float x;
+	float speed;
+	float angle;
+	XMFLOAT2 pos;
 	//---------------//
 };
